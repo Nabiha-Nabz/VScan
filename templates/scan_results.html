@@ -1,0 +1,259 @@
+{% extends "base.html" %}
+
+{% block title %}Scan Results{% endblock %}
+
+{% block content %}
+<div class="scan-results-container">
+    <div class="results-header">
+        <h1>Scan Results for <span class="target-url">{{ target_url }}</span></h1>
+        <div class="scan-meta">
+            <div class="meta-item">
+                <i class="fas fa-calendar-alt"></i>
+                <span>{{ scan_date }}</span>
+            </div>
+            <div class="meta-item">
+                <i class="fas fa-clock"></i>
+                <span>{{ scan_duration }} seconds</span>
+            </div>
+            <div class="meta-item severity-{{ overall_severity }}">
+                <i class="fas fa-shield-alt"></i>
+                <span>{{ overall_severity|capitalize }} Risk</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-summary">
+        <div class="summary-card total-vulns">
+            <div class="summary-icon">
+                <i class="fas fa-bug"></i>
+            </div>
+            <div class="summary-content">
+                <h3>Total Vulnerabilities</h3>
+                <p class="summary-value">{{ vulnerabilities|length }}</p>
+            </div>
+        </div>
+
+        <div class="summary-card critical">
+            <div class="summary-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <div class="summary-content">
+                <h3>Critical</h3>
+                <p class="summary-value">{{ critical_count }}</p>
+            </div>
+        </div>
+
+        <div class="summary-card high">
+            <div class="summary-icon">
+                <i class="fas fa-exclamation-circle"></i>
+            </div>
+            <div class="summary-content">
+                <h3>High</h3>
+                <p class="summary-value">{{ high_count }}</p>
+            </div>
+        </div>
+
+        <div class="summary-card medium">
+            <div class="summary-icon">
+                <i class="fas fa-info-circle"></i>
+            </div>
+            <div class="summary-content">
+                <h3>Medium</h3>
+                <p class="summary-value">{{ medium_count }}</p>
+            </div>
+        </div>
+
+        <div class="summary-card low">
+            <div class="summary-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="summary-content">
+                <h3>Low</h3>
+                <p class="summary-value">{{ low_count }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-actions">
+        <a href="/download_report/{{ report_id }}" class="btn-download">
+            <i class="fas fa-download"></i> Download Full Report
+        </a>
+        <button id="share-results" class="btn-share">
+            <i class="fas fa-share-alt"></i> Share Results
+        </button>
+    </div>
+
+    <div class="vulnerabilities-container">
+        <div class="vulnerabilities-header">
+            <h2>Vulnerabilities Details</h2>
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="severity-filter">Filter by:</label>
+                    <select id="severity-filter" class="filter-select">
+                        <option value="all">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="type-filter">Type:</label>
+                    <select id="type-filter" class="filter-select">
+                        <option value="all">All Types</option>
+                        <option value="SQL Injection">SQL Injection</option>
+                        <option value="XSS">XSS</option>
+                        <option value="CSRF">CSRF</option>
+                        <option value="File Inclusion">File Inclusion</option>
+                        <option value="XXE">XXE</option>
+                        <option value="SSRF">SSRF</option>
+                        <option value="Command Injection">Command Injection</option>
+                        <option value="Deserialization">Deserialization</option>
+                        <option value="Open Redirect">Open Redirect</option>
+                        <option value="IDOR">IDOR</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="vulnerabilities-list">
+            {% for vuln in vulnerabilities %}
+            <div class="vulnerability-card severity-{{ vuln.severity }} type-{{ vuln.type|replace(' ', '-')|lower }}">
+                <div class="vulnerability-header">
+                    <div class="severity-badge severity-{{ vuln.severity }}">
+                        {{ vuln.severity|capitalize }}
+                    </div>
+                    <h3>{{ vuln.type }}</h3>
+                    <div class="vulnerability-meta">
+                        <span class="location"><i class="fas fa-map-marker-alt"></i> {{ vuln.location }}</span>
+                    </div>
+                </div>
+                <div class="vulnerability-body">
+                    <div class="description">
+                        <h4>Description</h4>
+                        <p>{{ vuln.description }}</p>
+                    </div>
+                    <div class="recommendation">
+                        <h4>Recommendation</h4>
+                        <p>{{ vuln.recommendation }}</p>
+                    </div>
+                    <div class="technical-details">
+                        <h4>Technical Details</h4>
+                        <div class="code-block">
+                            <pre><code>{{ vuln.payload }}</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="vulnerability-footer">
+                    <button class="btn-copy" data-clipboard-text="{{ vuln.payload }}">
+                        <i class="far fa-copy"></i> Copy Payload
+                    </button>
+                    <button class="btn-learn-more" data-type="{{ vuln.type }}">
+                        <i class="fas fa-book"></i> Learn More
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="share-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Share Scan Results</h2>
+        <div class="share-options">
+            <div class="share-link">
+                <input type="text" id="share-url" value="{{ share_url }}" readonly>
+                <button id="copy-url" class="btn-copy">
+                    <i class="far fa-copy"></i> Copy
+                </button>
+            </div>
+            <div class="social-share">
+                <button class="social-btn twitter">
+                    <i class="fab fa-twitter"></i> Twitter
+                </button>
+                <button class="social-btn linkedin">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </button>
+                <button class="social-btn email">
+                    <i class="fas fa-envelope"></i> Email
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.8/clipboard.min.js"></script>
+<script>
+// Initialize clipboard.js
+new ClipboardJS('.btn-copy');
+
+// Show success message when copied
+document.querySelectorAll('.btn-copy').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => {
+            this.innerHTML = originalText;
+        }, 2000);
+    });
+});
+
+// Filter vulnerabilities
+document.getElementById('severity-filter').addEventListener('change', filterVulnerabilities);
+document.getElementById('type-filter').addEventListener('change', filterVulnerabilities);
+
+function filterVulnerabilities() {
+    const severityFilter = document.getElementById('severity-filter').value;
+    const typeFilter = document.getElementById('type-filter').value.toLowerCase().replace(' ', '-');
+    
+    document.querySelectorAll('.vulnerability-card').forEach(card => {
+        const cardSeverity = card.classList.contains('severity-critical') ? 'critical' :
+                           card.classList.contains('severity-high') ? 'high' :
+                           card.classList.contains('severity-medium') ? 'medium' : 'low';
+        
+        const cardType = card.className.match(/type-([^\s]+)/)[1];
+        
+        const severityMatch = severityFilter === 'all' || cardSeverity === severityFilter;
+        const typeMatch = typeFilter === 'all' || cardType.includes(typeFilter);
+        
+        if (severityMatch && typeMatch) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Modal functionality
+const modal = document.getElementById('share-modal');
+const btnShare = document.getElementById('share-results');
+const spanClose = document.getElementsByClassName('close-modal')[0];
+
+btnShare.onclick = function() {
+    modal.style.display = 'block';
+}
+
+spanClose.onclick = function() {
+    modal.style.display = 'none';
+}
+
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Learn more buttons
+document.querySelectorAll('.btn-learn-more').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const vulnType = this.getAttribute('data-type');
+        // In a real app, this would redirect to a knowledge base or open a modal
+        alert(`Redirecting to more information about ${vulnType}`);
+    });
+});
+</script>
+{% endblock %}

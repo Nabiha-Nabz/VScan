@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome to VScan, {{ username }}!</h1>
+    <p>Scan your website for security vulnerabilities with our comprehensive scanner.</p>
+</div>
+
+<div class="scan-container">
+    <form id="scan-form">
+        <div class="input-group">
+            <input type="text" id="target-url" placeholder="Enter website URL (e.g., https://example.com)" required>
+            <button type="submit" class="btn-scan">Scan Now</button>
+        </div>
+    </form>
+
+    <div class="results-container">
+        <h2>Scan Results</h2>
+        <div id="scan-progress">
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+            <div class="progress-text">Waiting to scan...</div>
+        </div>
+        <div id="vulnerabilities-list"></div>
+        <div id="report-actions" style="display: none;">
+            <center><button id="download-report" class="btn-download">
+                <i class="fas fa-download"></i> Download Report
+            </button></center>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('scan-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const url = document.getElementById('target-url').value;
+    
+    // Show loading state
+    const progressBar = document.querySelector('.progress');
+    const progressText = document.querySelector('.progress-text');
+    progressBar.style.width = '0%';
+    progressText.textContent = 'Scanning...';
+    
+    // Clear previous results
+    document.getElementById('vulnerabilities-list').innerHTML = '';
+    document.getElementById('report-actions').style.display = 'none';
+    
+    // Simulate progress (will be replaced with actual progress from server)
+    let progress = 0;
+    const progressInterval = setInterval(() => {
+        progress += 5;
+        progressBar.style.width = `${progress}%`;
+        
+        if (progress >= 100) {
+            clearInterval(progressInterval);
+            progressText.textContent = 'Scan complete!';
+        }
+    }, 6000);
+    
+    // Send scan request to server
+    fetch('/scan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `url=${encodeURIComponent(url)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        progressText.textContent = 'Scan complete!';
+        
+        if (data.error) {
+            document.getElementById('vulnerabilities-list').innerHTML = `
+                <div class="alert alert-danger">${data.error}</div>
+            `;
+            return;
+        }
+        
+        const vulnerabilitiesList = document.getElementById('vulnerabilities-list');
+        
+        if (data.vulnerabilities.length === 0) {
+            vulnerabilitiesList.innerHTML = `
+                <div class="alert alert-success">
+                    No vulnerabilities found! Your website appears to be secure.
+                </div>
+            `;
+        } else {
+            let html = '<div class="vulnerabilities">';
+            data.vulnerabilities.forEach(vuln => {
+                let severity = 'medium';
+                if (vuln.includes('SQL Injection') || vuln.includes('Command Injection') || vuln.includes('XXE')) {
+                    severity = 'critical';
+                } else if (vuln.includes('XSS') || vuln.includes('SSRF') || vuln.includes('File Inclusion')) {
+                    severity = 'high';
+                }
+                
+                html += `
+                    <div class="vulnerability ${severity}">
+                        <div class="severity-indicator ${severity}"></div>
+                        <div class="vulnerability-details">
+                            <h3>${vuln.split(' in ')[0]}</h3>
+                            ${vuln.split(' in ')[1] ? `<p>Location: ${vuln.split(' in ')[1]}</p>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            vulnerabilitiesList.innerHTML = html;
+        }
+        
+        // Show download button
+        document.getElementById('report-actions').style.display = 'block';
+        document.getElementById('download-report').onclick = () => {
+            window.location.href = `/download_report/${data.report_id}`;
+        };
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('vulnerabilities-list').innerHTML = `
+            <div class="alert alert-danger">An error occurred during scanning. Please try again.</div>
+        `;
+    });
+});
+</script>
+{% endblock %}

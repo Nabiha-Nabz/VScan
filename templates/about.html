@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-header">
+        <h1>About VScan</h1>
+        <p>A comprehensive vulnerability scanner for web applications</p>
+    </div>
+    
+    <div class="about-content">
+        <section>
+            <h2>Our Mission</h2>
+            <p>
+                VScan is designed to help developers and security professionals identify 
+                vulnerabilities in their web applications before they can be exploited by 
+                malicious actors. Our scanner performs thorough checks for common security 
+                issues, providing detailed reports and recommendations for remediation.
+            </p>
+        </section>
+        
+        <section>
+            <h2>Scanning Capabilities</h2>
+            <div class="cards-container">
+                <div class="card">
+                    <div class="card-icon critical">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <h3>SQL Injection</h3>
+                    <p>Detects various SQL injection techniques including boolean-based, time-based, and error-based.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon high">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3>XSS</h3>
+                    <p>Identifies Cross-Site Scripting vulnerabilities in input parameters.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon medium">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>CSRF</h3>
+                    <p>Checks for missing anti-CSRF tokens in forms.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon critical">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>File Inclusion</h3>
+                    <p>Tests for Local and Remote File Inclusion vulnerabilities.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon critical">
+                        <i class="fas fa-file-code"></i>
+                    </div>
+                    <h3>XXE</h3>
+                    <p>Detects XML External Entity processing vulnerabilities.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="card-icon high">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>SSRF</h3>
+                    <p>Identifies Server-Side Request Forgery vulnerabilities.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>How It Works</h2>
+            <ol class="steps">
+                <li>
+                    <span>1</span>
+                    <p>Enter the URL of the website you want to scan</p>
+                </li>
+                <li>
+                    <span>2</span>
+                    <p>Our scanner performs multiple vulnerability checks</p>
+                </li>
+                <li>
+                    <span>3</span>
+                    <p>View real-time results as vulnerabilities are detected</p>
+                </li>
+                <li>
+                    <span>4</span>
+                    <p>Download a detailed PDF report with recommendations</p>
+                </li>
+            </ol>
+        </section>
+    </div>
+</div>
+{% endblock %}

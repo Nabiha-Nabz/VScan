@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Scan Reports{% endblock %}
+
+{% block content %}
+<div class="reports-container">
+    <h1>Your Scan Reports</h1>
+    
+    {% if reports %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Website</th>
+                    <th>URL</th>
+                    <th>Vulnerabilities</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td>{{ report['created_at'] }}</td>
+                    <td>{{ report['target_url'].split('//')[1].split('/')[0] }}</td>
+                    <td>{{ report['target_url'][:30] }}...</td>
+                    <td>{{ report['vulnerability_count'] }}</td>
+                    <td>
+                        <a href="/download_report/{{ report['id'] }}" class="btn-download-small">
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="no-reports">
+        <i class="fas fa-file-alt"></i>
+        <p>You haven't scanned any websites yet.</p>
+        <a href="{{ url_for('home') }}" class="btn-scan">Start Scanning</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
