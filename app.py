@@ -6,6 +6,9 @@ from report_generator import generate_pdf_report
 import time
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'dev-only-change-me')
