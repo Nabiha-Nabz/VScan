@@ -1,82 +1,43 @@
-# VScan
-The Vulnerability Scanner WebApp is a full-stack Python-based web application designed to identify and report common web security vulnerabilities in websites. Built using the Flask framework, this tool enables users to sign up, log in, submit a target URL, and receive a detailed scan report of the site's security issues.
+# VScan Web Vulnerability Scanner
 
-The scanner checks for well-known threats such as SQL Injection, Cross-Site Scripting (XSS), Cross-Site Request Forgery (CSRF), Server-Side Request Forgery (SSRF), Insecure Direct Object References (IDOR), and more. The results are compiled into a downloadable PDF report containing vulnerability descriptions, detected risks, and recommended security practices.
+VScan is an educational Flask application for authorized security testing. Users can create accounts, submit a permitted target, review common web-security checks, and download PDF reports.
 
-The system integrates:
+> **Authorization required:** Scan only systems you own or have explicit written permission to test. Unauthorized security testing may be illegal and disruptive.
 
-    A user-friendly interface using Flask with HTML/CSS templates
+## Features
 
-    Real-time scanning through multithreaded background processing
+- User registration, authentication, and profiles
+- Background website scanning workflow
+- Checks for common web security weaknesses
+- Scan history and detailed findings
+- Downloadable PDF reports
+- SQLite-backed local development
 
-    A PDF report generator for professional output
+## Technology
 
-    SQLite database to manage users and scan history
-
-This project was developed as a final-year academic project to demonstrate applied knowledge in web development, networking, cybersecurity, and secure coding practices.
-
-    ⚠️ Disclaimer: This tool is strictly intended for educational and ethical testing purposes. Unauthorized scanning of websites is illegal.
-
-# 🔐 Vulnerability Scanner Web Application
-
-This is a Python Flask-based web application that allows users to scan websites for common web vulnerabilities such as SQL Injection, XSS, CSRF, IDOR, SSRF, and more. It includes user authentication, real-time scanning, and downloadable PDF reports.
-
----
-
-## 📌 Features
-
-- User Signup and Login
-- Website Vulnerability Scanning
-- Common security checks (XSS, SQLi, CSRF, etc.)
-- PDF report generation
-- SQLite database for user and scan data
-- Modern frontend using HTML/CSS/JS with Flask templating
-
----
-
-## 🖥️ Technologies Used
-
-- Python 3.x
-- Flask
+- Python and Flask
 - SQLite
 - FPDF
-- HTML5, CSS3, JavaScript
+- HTML, CSS, and JavaScript
 
----
-
-## ⚙️ Installation
+## Local setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/vulnerability-scanner-webapp.git
-cd vulnerability-scanner-webapp
+git clone https://github.com/Nabiha-Nabz/VScan.git
+cd VScan
+python -m venv .venv
+```
 
-# Create virtual environment (optional but recommended)
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+Activate the environment, then run:
 
-# Install dependencies
+```bash
 pip install -r requirements.txt
-
-# Run the app
+copy .env.example .env
 python app.py
+```
 
-#Project Structure
-vulnerability_scanner_webapp/
-├── app.py
-├── scanner.py
-├── database.py
-├── report_generator.py
-├── instance/
-│   └── scanner.db
-├── reports/
-│   └── [Generated PDFs]
-├── static/
-│   ├── css/
-│   └── js/
-├── templates/
-│   └── *.html
-├── requirements.txt
-└── README.md
+On macOS or Linux, use `cp .env.example .env`. Open `http://127.0.0.1:5000` after startup.
 
+## Safety and limitations
 
+This is an academic project, not a replacement for a professional security assessment. Results can include false positives or false negatives. Keep scans low impact, obtain authorization, and validate findings manually.

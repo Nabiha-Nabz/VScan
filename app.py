@@ -8,7 +8,7 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+app.secret_key = os.getenv('SECRET_KEY', 'dev-only-change-me')
 app.config['DATABASE'] = os.path.join(app.instance_path, 'scanner.db')
 
 # Initialize database
